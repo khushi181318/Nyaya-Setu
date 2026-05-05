@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>NyayaSetu Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    ⚖️ NyayaSetu Dashboard  
+    <div style="font-size:13px; opacity:0.8;">
+        AI Legal Case Management
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="container">
+
+    <div class="card">
+
+        <h2>📊 Case Dashboard</h2>
+        <h3>📊 Case Analytics</h3>
+
+    <canvas id="caseChart" height="100"></canvas>
+
+        <br>
+
+        <!-- STATS -->
+        <div class="stats">
+            <div>Total: <span id="total">0</span></div>
+            <div style="color:green;">Approved: <span id="approved">0</span></div>
+            <div style="color:red;">Rejected: <span id="rejected">0</span></div>
+        </div>
+
+        <br>
+
+        <!-- CONTROLS -->
+        <input type="text" id="search" placeholder="🔍 Search case..." onkeyup="filterCases()">
+        
+        <select id="filter" onchange="filterCases()">
+            <option>All</option>
+            <option>Approved</option>
+            <option>Rejected</option>
+        </select>
+
+        <button class="btn" onclick="loadCases()">🔄 Refresh</button>
+
+        <br><br>
+
+        <!-- TABLE -->
+        <table>
+            <thead>
+                <tr>
+                    <th>Case Title</th>
+                    <th>Date</th>
+                    <th>Direction</th>
+                    <th>Confidence</th>
+                    <th>Status</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+
+            <tbody id="tableBody"></tbody>
+        </table>
+
+    </div>
+
+</div>
+
+<!-- SCRIPT -->
+<script>
+
+const BASE_URL = "http://127.0.0.1:5000";
+let allCases = [];
+
+// 🟣 LOAD CASES
+async function loadCases(){
+
+    try{
+        let res = await fetch(`${BASE_URL}/cases`);
+
+        if(!res.ok){
+            throw new Error("Server error");
+        }
+
+        let cases = await res.json();
+        allCases = cases;
+
+        renderTable(cases);
+
+    }catch(err){
+        console.error(err);
+
+        document.getElementById("tableBody").innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center; color:red;">
+                    ❌ Failed to load data. Check backend.
+                </td>
+            </tr>
+        `;
+    }
+}
+
+
+// 🟣 RENDER TABLE
+function renderTable(cases){
+
+    let table = document.getElementById("tableBody");
+    table.innerHTML = "";
+
+    let total = cases.length;
+    let approved = 0;
+    let rejected = 0;
+
+    // ⚠️ EMPTY STATE
+    if(cases.length === 0){
+        table.innerHTML = `
+            <tr>
+                <td colspan="6" style="text-align:center; padding:20px;">
+                    ⚠️ No cases available. Upload & approve cases.
+                </td>
+            </tr>
+        `;
+    }
+
+    cases.forEach(c => {
+
+        if(c.status === "Approved") approved++;
+        if(c.status === "Rejected") rejected++;
+
+        let row = `
+            <tr>
+                <td>${c.case_title || "-"}</td>
+                <td>${c.date || "-"}</td>
+
+                <td title="${c.key_direction}">
+                    ${truncate(c.key_direction, 60)}
+                </td>
+
+                <td>${c.confidence || "-"}</td>
+
+                <td style="color:${getColor(c.status)}; font-weight:bold;">
+                    ${c.status || "Pending"}
+                </td>
+
+                <td>${c.timestamp || "-"}</td>
+            </tr>
+        `;
+
+        table.innerHTML += row;
+    });
+
+    // 📊 UPDATE STATS
+    document.getElementById("total").innerText = total;
+    document.getElementById("approved").innerText = approved;
+    document.getElementById("rejected").innerText = rejected;
+}
+
+
+// 🟣 TRUNCATE LONG TEXT
+function truncate(text, limit){
+    if(!text) return "-";
+    return text.length > limit ? text.substring(0, limit) + "..." : text;
+}
+
+
+// 🟣 COLOR
+function getColor(status){
+    if(status === "Approved") return "green";
+    if(status === "Rejected") return "red";
+    return "#f59e0b";
+}
+
+
+// 🟣 SEARCH + FILTER
+function filterCases(){
+
+    let search = document.getElementById("search").value.toLowerCase();
+    let filter = document.getElementById("filter").value;
+
+    let filtered = allCases.filter(c => {
+
+        let title = c.case_title ? c.case_title.toLowerCase() : "";
+        let direction = c.key_direction ? c.key_direction.toLowerCase() : "";
+
+        let matchSearch =
+            title.includes(search) ||
+            direction.includes(search);
+
+        let matchFilter =
+            filter === "All" || c.status === filter;
+
+        return matchSearch && matchFilter;
+    });
+
+    renderTable(filtered);
+}
+
+
+// 🔁 AUTO LOAD (REAL-TIME)
+loadCases();
+setInterval(loadCases, 3000);
+
+</script>
+
+</body>
+</html>
