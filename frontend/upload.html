@@ -14,6 +14,7 @@
     <div class="nav-left">
         ⚖️ <span class="logo">NyayaSetu</span>
     </div>
+
     <div class="nav-right">
         AI Legal Decision Support System
     </div>
@@ -28,22 +29,43 @@
 
         <!-- FILE UPLOAD -->
         <form id="uploadForm">
-            <label class="file-label">Select Judgment PDF</label><br>
 
-            <input type="file" id="fileInput" accept="application/pdf" required>
+            <label class="file-label">
+                Select Judgment PDF
+            </label>
+
+            <br>
+
+            <input 
+                type="file" 
+                id="fileInput" 
+                accept="application/pdf" 
+                required
+            >
 
             <br><br>
-            <div class="badge">⚡ Real-time AI Analysis</div>
+
+            <div class="badge">
+                ⚡ Real-time AI Analysis
+            </div>
+
+            <br>
 
             <button class="btn primary" type="submit">
                 🔍 Analyze Document
             </button>
-            <button onclick="window.location.href='dashboard.html'">
-    📊 View Dashboard
+
+            <button 
+                type="button"
+                class="btn secondary"
+                onclick="window.location.href='dashboard.html'"
+            >
+                📊 View Dashboard
             </button>
+
         </form>
 
-        <!-- LOADING TEXT -->
+        <!-- LOADING -->
         <div id="loading" style="display:none; margin-top:10px;">
             ⏳ Processing document...
         </div>
@@ -51,23 +73,30 @@
         <!-- 🔷 MAIN GRID -->
         <div class="main-grid">
 
-            <!-- 📄 LEFT SIDE -->
+            <!-- LEFT -->
             <div class="pdf-section">
+
                 <h3>📄 Document Preview</h3>
+
                 <iframe id="pdfViewer"></iframe>
+
             </div>
 
-            <!-- 🤖 RIGHT SIDE -->
+            <!-- RIGHT -->
             <div class="ai-section">
 
                 <h3>🤖 AI Analysis</h3>
 
                 <!-- OUTPUT -->
                 <div id="output" class="output-box">
-                    <p>Upload a document to see analysis...</p>
+
+                    <p>
+                        Upload a document to see AI analysis...
+                    </p>
+
                 </div>
 
-                <!-- PROGRESS BAR -->
+                <!-- PROGRESS -->
                 <div class="progress">
                     <div id="bar" class="bar"></div>
                 </div>
@@ -75,30 +104,59 @@
                 <!-- ACTIONS -->
                 <div id="actions" class="actions" style="display:none;">
 
-                    <!-- PRIMARY ACTIONS -->
+                    <!-- PRIMARY -->
                     <div class="action-row">
-                        <button class="btn approve" onclick="approve()">✔ Approve</button>
-                        <button class="btn reject" onclick="reject()">✖ Reject</button>
-                        <button class="btn edit" onclick="edit()">✏ Edit</button>
+
+                        <button class="btn approve" onclick="approve()">
+                            ✔ Approve
+                        </button>
+
+                        <button class="btn reject" onclick="reject()">
+                            ✖ Reject
+                        </button>
+
+                        <button class="btn edit" onclick="edit()">
+                            ✏ Edit
+                        </button>
+
                     </div>
 
-                    <!-- SECONDARY ACTIONS -->
+                    <!-- SECONDARY -->
                     <div class="action-row">
-                        <button class="btn secondary" onclick="explain()">🧠 Explain AI</button>
-                        <button class="btn secondary" onclick="download()">⬇ Download Report</button>
+
+                        <button class="btn secondary" onclick="explain()">
+                            🧠 Explain AI
+                        </button>
+
+                        <button class="btn secondary" onclick="download()">
+                            ⬇ Download Report
+                        </button>
+
                     </div>
 
                     <!-- LANGUAGE -->
                     <div class="action-row">
-                        <label>🌐 Language:</label>
-                        <select id="langSelect" onchange="translate(this.value)">
-                            <option value="English">English</option>
-                            <option value="Hindi">Hindi</option>
-                            <option value="Kannada">Kannada</option>
+
+                        <label>
+                            🌐 Language:
+                        </label>
+
+                        <select id="languageSelect" onchange="translate()">
+
+                            <option value="English">
+                                English
+                            </option>
+
+                            <option value="Hindi">
+                                Hindi
+                            </option>
+
+                            <option value="Kannada">
+                                Kannada
+                            </option>
+
                         </select>
-                    </div>
-                    <div style="background:#f3f4f6; padding:10px; border-radius:6px;">
-                    🧠 <b>AI Summary:</b> ${data.summary}
+
                     </div>
 
                 </div>
@@ -114,8 +172,5 @@
 <!-- JS -->
 <script src="script.js"></script>
 
-
 </body>
-
-
 </html>
